@@ -108,34 +108,32 @@ public class BoardDAO {
 	}
 	//수정
 	public int update(Board board) {
-		PreparedStatement pstmt = null;
-		Connection con = null;
-		String sql = "update board set title=?, writer=?, content=?, filename=? where board_id=?";
-		int result =0;
+		Connection con=null;
+		PreparedStatement pstmt=null;
+		int result=0;
+		String sql="update board set title=?, writer=?,content=?,filename=? where board_id=?";
 		
-		con = pool.getConnection();
+		con=pool.getConnection();
 		try {
-			pstmt = con.prepareStatement(sql);
+			pstmt=con.prepareStatement(sql);
 			pstmt.setString(1, board.getTitle());
 			pstmt.setString(2, board.getWriter());
 			pstmt.setString(3, board.getContent());
 			pstmt.setString(4, board.getFilename());
-			
-			result = pstmt.executeUpdate();
+			pstmt.setInt(5, board.getBoard_id());
+			result=pstmt.executeUpdate();
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}finally {
 			pool.release(con, pstmt);
 		}
-		
 		return result;
 	}
 	//삭제
 	public int delete(int board_id) {
 		PreparedStatement pstmt =null;
 		Connection con = null;
-		String sql= "delete from board where =? ";
+		String sql= "delete from board where board_id=?";
 		int result =0;
 		con = pool.getConnection();
 		try {

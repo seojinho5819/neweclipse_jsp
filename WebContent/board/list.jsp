@@ -1,25 +1,16 @@
+<%@page import="board.model.MybatisBoardDAO"%>
+<%@page import="common.board.Pager"%>
 <%@page import="java.util.List"%>
 <%@ page contentType="text/html;charset=utf-8"%>
 <%@page import="board.model.Board"%>
 <%@page import="board.model.BoardDAO"%>
 <%
-	BoardDAO dao = new BoardDAO();
+	MybatisBoardDAO dao = new MybatisBoardDAO();
+	Pager pager = new Pager(); 
 	List<Board> list = dao.selectAll();
+	pager.init(request,list);
 	
-	int totalRecord = list.size(); //총 레코드의 수
-	int pageSize = 10;//페이지당 보여질 레코드 수
-	int totalPage = (int)Math.ceil((float)totalRecord/pageSize);//총 페이지 수
-	int blocksize =10;//블록안에 보여질 페이지 수
-	int currentPage =1;//현재 페이지
-	if(request.getParameter("currentPage")!=null){
-		currentPage = Integer.parseInt(request.getParameter("currentPage"));
-	}
-	int firstPage=currentPage -(currentPage-1)%blocksize;
-	int lastPage=firstPage+(blocksize - 1);
-	int curPos = (currentPage-1)*pageSize;
-	int num= totalRecord-curPos;
-	
-	
+
 	
 %>
 
@@ -50,17 +41,31 @@ a { text-decoration:none }
 	<table>
 		<tr>
 			<th width="5%">순번</th>
-			<th width="40%">제목</th>
+			<th width="20%">이미지</th>
+			<th width="30%">제목</th>
 			<th width="15%">작성자</th>
-			<th width="25%">등록일</th>
-			<th width="15%">조회수</th>
+			<th width="20%">등록일</th>
+			<th width="10%">조회수</th>
 		</tr>
-		<%for(int i=1;i<=pageSize;i++){ %>
-		<%if(num<1) break;%>
+		<%
+		int num=pager.getNum(); 
+		int curPos=pager.getCurPos();
+		int firstPage = pager.getFirstPage();
+		int currentPage =  pager.getCurrentPage();
+		int lastPage = pager.getLastPage();
+		int blocksize = 10;
+		int totalPage = pager.getTotalPage();
+		
+		
+		%>
+		<%for(int i=1;i<=pager.getPageSize();i++){ %>
+		<%if(num<1)break; %>
 		<%Board board = list.get(curPos++); %>
+		
 		
 		<tr onMouseOver="showColor(this)" onMouseout="hideColor(this)">
 			<td><%=num-- %></td>
+			<td><img src="/data/<%=board.getFilename()%>" width="50px"></td>
 			<td><a href="detail.jsp?board_id=<%=board.getBoard_id() %>"><%=board.getTitle() %></a></td>
 			<td><%=board.getWriter()%></td>
 			<td><%=board.getRegdate().substring(0,10) %></td>
@@ -68,12 +73,13 @@ a { text-decoration:none }
 		</tr>
 		<%} %>
 		
+			
 		<tr>
-			<td colspan="3" style="text-align:center">
+			<td colspan="6" style="text-align:center">
 				<%if(firstPage-1>=1){ %>
 				<a href="list.jsp?currentPage=<%=currentPage-1%>">◀</a>
 				<%}else{%>
-				<a href="javascript:alert('첫번째 페이지입니다');">◀</a>
+				<a href="javascript:alert('첫번째 블록입니다');">◀</a>
 				<%} %>
 				<%for(int i=firstPage;i<blocksize;i++){ %>
 				<%if(i>totalPage)break; %>
@@ -82,12 +88,12 @@ a { text-decoration:none }
 				<%if((lastPage+1)<totalPage){ %>
 				<a href="list.jsp?currentPage=<%=currentPage+1%>">▶</a>
 				<%}else {%>
-				<a href="javascript:alert('마지막 페이지입니다');">▶</a>
+				<a href="javascript:alert('마지막 블록입니다');">▶</a>
 				<%} %>
 			</td>
 		</tr>
 		<tr >
-			<td colspan="3">
+			<td colspan="6">
 				<button onClick="location.href='regist_form.jsp'">글등록</button>
 			</td>
 		</tr>
