@@ -20,7 +20,11 @@
 		//관리자 VO를 담자!
 		admin.setMid(mid);
 		admin.setPassword(password);
-		response.sendRedirect("/admin/index.jsp?admin_id="+admin.getMid());//클라이언트로 하여금 지정한 url로 요청을 시도하게끔 하는 기능 
+		
+		session.setAttribute("ad", admin);
+		System.out.println("로그인 요청시 사용되는 세션은 :" +session);
+		
+		response.sendRedirect("/admin/index.jsp");//클라이언트로 하여금 지정한 url로 요청을 시도하게끔 하는 기능 
 	}else{
 		out.print(getMsgBack("로그인실패"));
 	}

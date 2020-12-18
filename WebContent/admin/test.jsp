@@ -19,6 +19,7 @@
 	*/
 	String id = session.getId();
 	out.print(id);
+	//고양이가 발급한 세션 아이디는 C25C0E4C58E397B0D3DCED5C203E3D88
 %>
 </body>
 </html>
